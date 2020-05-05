@@ -110,44 +110,96 @@ void conflicting_options(const po::variables_map& vm,
 
 int main(int argc, char** argv) {
   try {
-    po::options_description usage("Usage");
-    // clang-format off
+    // Load these from config
+    bool default_pragma = true;
+
+    po::options_description generic("Generic options");
+    generic.add_options()
+        // Help
+        ("help", "prints usage message")
+        // Version
+        ("version", "prints version information")
+        // verbose
+        ("verbose",
+         po::value<bool>()->zero_tokens()->default_value(false)->implicit_value(true),
+         "shows the list of files created")
+        // Dry-run
+        ("dry-run",
+         po::value<bool>()->zero_tokens()->default_value(false)->implicit_value(true),
+         "do not actually create files");
+
+    po::options_description usage("Creation options");
     usage.add_options()
-      ("help", "prints usage message")
-      ("version,v", "prints version information")
+        // Class
+        ("class,c", po::value<std::vector<std::string>>()->multitoken(),
+         "creates a class")
+        // Header
+        ("header,h", po::value<std::vector<std::string>>()->multitoken(),
+         "creates a header file")
+        // source
+        ("source,s", po::value<std::vector<std::string>>()->multitoken(),
+         "creates a source file");
 
-      ("class,c", po::value<std::vector<std::string>>(), "creates a class")
-      ("header,h", po::value<std::vector<std::string>>(), "creates a header file")
-      ("source,s", po::value<std::vector<std::string>>(), "creates a source file")
+    po::options_description options("Options");
+    options.add_options()
+        // Identifiers
+        /*("identifiers", po::value<std::vector<std::string>>()->required(),
+         "identifiers of files to create")*/
+        // Folder
+        ("folder,f", po::value<std::string>(), "creates everything in arg folder")
+        // Include
+        ("include", po::value<std::vector<std::string>>(),
+         "adds #include <arg> to header or source files")
+        // Lowercase
+        ("lowercase", po::value<bool>()->zero_tokens()->default_value(true),
+         "creates lowercase filenames, default is true")
+        // Include guard
+        ("include-guard", po::value<std::string>()->default_value("pragma"),
+         "include guard for header files, one of: pragma, ifndef")
+        // Header extension
+        ("header-ext", po::value<std::string>()->default_value("hh"),
+         "header files extension, default is hh")
+        // Source extension
+        ("source-ext", po::value<std::string>()->default_value("cpp"),
+         "source files extension, default is cpp");
 
-      ("lowercase,l", po::value<bool>()->default_value(true), "creates lowercase filenames, default is true")
-      ("pragma,p", po::value<bool>()->default_value(true), "use #pragma once as header guards, default is true")
-      ;
-    // clang-format on
+    /*po::positional_options_description p;
+    p.add("identifiers", -1);*/
+
+    generic.add(usage).add(options);
 
     po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).options(usage).run(), vm);
+    po::store(
+        po::command_line_parser(argc, argv).options(generic) /*.positional(p)*/.run(),
+        vm);
     po::notify(vm);
 
-    if (vm.size() == 1 || vm.count("help")) {
-      usage.print(std::cout);
-      return 0;
-    }
+    bool class_command  = vm.count("class");
+    bool header_command = vm.count("header");
+    bool source_command = vm.count("source");
+
+    conflicting_options(vm, "pragma", "ifndef");
 
     if (vm.count("version")) {
       std::cout << "cxxh v0.3.0\n";
       return 0;
     }
 
-    if (vm.count("class")) {
+    if (vm.count("help") || !(class_command || header_command || source_command)) {
+      std::cout << "Usage: cxxh <creation option> [options] args\n";
+      generic.print(std::cout);
+      return 0;
+    }
+
+    if (class_command) {
       Creators::Class::create(vm);
     }
 
-    if (vm.count("header")) {
+    if (header_command) {
       Creators::Header::create(vm);
     }
 
-    if (vm.count("source")) {
+    if (source_command) {
       Creators::Source::create(vm);
     }
 

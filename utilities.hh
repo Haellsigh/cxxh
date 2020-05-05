@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 
+#include <fmt/core.h>
+#include <fmt/format.h>
+
 namespace utility {
 
 namespace detail {
@@ -30,11 +33,17 @@ std::vector<std::string> split(std::string string, const std::string& delimiter)
  * \brief Splits a string at the last occurence of delimiter
  * \return A pair of strings.
  */
-std::array<std::string, 2> split_last(std::string string, const std::string& delimiter);
+std::tuple<std::string, std::string> split_last(std::string        string,
+                                                const std::string& delimiter);
 
-void replace_all(std::string& str, const std::string& from, const std::string& to);
+void                      replace_all_inplace(std::string&       str,
+                                              const std::string& from,
+                                              const std::string& to);
+[[nodiscard]] std::string replace_all(const std::string& str,
+                                      const std::string& from,
+                                      const std::string& to);
 
-std::filesystem::path build_directories(std::string directories);
+bool build_directories(std::filesystem::path directories);
 
 template <typename... Args>
 std::string parse_template(const std::string_view& template_string, Args... args) {

@@ -1,19 +1,20 @@
 #include "utilities.hh"
 
-std::filesystem::path utility::build_directories(std::string directories) {
+#include <iostream>
+
+bool utility::build_directories(std::filesystem::path directories) {
   using namespace std::filesystem;
 
-  path final_path(current_path());
-  final_path.append(directories);
+  path final_path{current_path() / directories};
 
-  create_directories(final_path);
+  bool created = create_directories(final_path);
 
-  return final_path;
+  return created;
 }
 
-void utility::replace_all(std::string&       str,
-                          const std::string& from,
-                          const std::string& to) {
+void utility::replace_all_inplace(std::string&       str,
+                                  const std::string& from,
+                                  const std::string& to) {
   if (from.empty())
     return;
   size_t start_pos = 0;
@@ -24,8 +25,16 @@ void utility::replace_all(std::string&       str,
   }
 }
 
-std::array<std::string, 2> utility::split_last(std::string        string,
-                                               const std::string& delimiter) {
+std::string utility::replace_all(const std::string& str,
+                                 const std::string& from,
+                                 const std::string& to) {
+  std::string string = str;
+  replace_all_inplace(string, from, to);
+  return string;
+}
+
+std::tuple<std::string, std::string> utility::split_last(std::string        string,
+                                                         const std::string& delimiter) {
   size_t pos = string.rfind(delimiter);
 
   std::string first;

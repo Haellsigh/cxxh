@@ -37,7 +37,10 @@ target_link_libraries(cxxh PRIVATE cxxopts::cxxopts)
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(cxxh PRIVATE fmt::fmt fmt::fmt-header-only)
 
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED COMPONENTS program_options locale)
 target_link_libraries(cxxh PRIVATE ${Boost_LIBRARIES})
+
+find_package(Microsoft.GSL CONFIG REQUIRED)
+target_link_libraries(cxxh PRIVATE Microsoft.GSL::GSL)
 
 target_include_directories(cxxh PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
