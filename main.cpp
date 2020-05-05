@@ -1,9 +1,5 @@
-#include <algorithm>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 
-#include <fmt/format.h>
 #include <boost/program_options.hpp>
 
 #include <creators/class.hh>
@@ -12,6 +8,7 @@
 #include "utilities.hh"
 
 namespace po = boost::program_options;
+using namespace cxxh;
 
 template <class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
@@ -113,57 +110,45 @@ void conflicting_options(const po::variables_map& vm,
 
 int main(int argc, char** argv) {
   try {
-    bool                     use_pragma;
-    std::vector<std::string> identifier;
-
-    po::options_description classOptions("Class option");
+    po::options_description usage("Usage");
     // clang-format off
-    classOptions.add_options()
-        ("help", "prints usage message")
-        ("version,v", "prints version information")
-        ("identifier", po::value<std::vector<std::string>>(&identifier), "identifies the file, class, namespace, ...")
-        ("class,c", "creates a class")
-        ("header,h", "creates a header file")
-        ("source,s", "creates a source file")
-        ("pragma,p", po::value<bool>(&use_pragma)->default_value(true), "use #pragma once in headers")
-        ;
+    usage.add_options()
+      ("help", "prints usage message")
+      ("version,v", "prints version information")
+
+      ("class,c", po::value<std::vector<std::string>>(), "creates a class")
+      ("header,h", po::value<std::vector<std::string>>(), "creates a header file")
+      ("source,s", po::value<std::vector<std::string>>(), "creates a source file")
+
+      ("lowercase,l", po::value<bool>()->default_value(true), "creates lowercase filenames, default is true")
+      ("pragma,p", po::value<bool>()->default_value(true), "use #pragma once as header guards, default is true")
+      ;
     // clang-format on
 
-    po::positional_options_description p;
-    p.add("identifier", -1);
-
     po::variables_map vm;
-    po::store(
-        po::command_line_parser(argc, argv).options(classOptions).positional(p).run(),
-        vm);
+    po::store(po::command_line_parser(argc, argv).options(usage).run(), vm);
     po::notify(vm);
 
-    if (vm.count("help")) {
-      classOptions.print(std::cout);
-      // cout << "\n";
-      return 1;
+    if (vm.size() == 1 || vm.count("help")) {
+      usage.print(std::cout);
+      return 0;
     }
 
     if (vm.count("version")) {
       std::cout << "cxxh v0.3.0\n";
-      return 1;
-    }
-
-    if (vm.count("identifier")) {
-      std::cout << "identifier:" << vm["identifier"].as<std::vector<std::string>>()
-                << "\n";
+      return 0;
     }
 
     if (vm.count("class")) {
-      std::cout << "creating class\n";
+      Creators::Class::create(vm);
     }
 
     if (vm.count("header")) {
-      std::cout << "creating header\n";
+      Creators::Header::create(vm);
     }
 
     if (vm.count("source")) {
-      std::cout << "creating source\n";
+      Creators::Source::create(vm);
     }
 
   } catch (std::exception& e) {
@@ -171,15 +156,4 @@ int main(int argc, char** argv) {
     return 1;
   }
   return 0;
-
-  /*Arguments::Handler cxxh{"cxxh", "0.2.0"};
-
-  cxxh.command("c", "class")
-      .help("Creates a class with format path/to/class/Name::space::ClassName")
-      .callback(create_class)
-
-      .option("pragma", "p", true);
-
-  return cxxh.execute(argc, argv);
-  */
 }

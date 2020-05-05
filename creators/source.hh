@@ -1,16 +1,12 @@
 #pragma once
 
-#include <string_view>
+#include <boost/program_options.hpp>
 
 namespace cxxh::Creators {
 
-constexpr std::string_view class_source_template =
-    "#include \"{header_file_name}\"\n\n"
-    "{namespace_begin}\n{namespace_end}";
-
 class Source {
  public:
-  static void create();
+  static bool create(boost::program_options::variables_map& vm);
 };
 
 }  // namespace cxxh::Creators
