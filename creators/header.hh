@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace Wizards {
+namespace cxxh::Creators {
 
 constexpr std::string_view header_template =
     "{header_guard_start}\n\n"
@@ -16,4 +16,4 @@ class Header {
   static void create(const std::string& content);
 };
 
-}  // namespace Wizards
+}  // namespace cxxh::Creators

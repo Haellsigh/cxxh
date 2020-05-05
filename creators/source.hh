@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace Wizards {
+namespace cxxh::Creators {
 
 constexpr std::string_view class_source_template =
     "#include \"{header_file_name}\"\n\n"
@@ -13,4 +13,4 @@ class Source {
   static void create();
 };
 
-}  // namespace Wizards
+}  // namespace cxxh::Creators

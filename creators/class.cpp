@@ -1,7 +1,3 @@
 #include "class.hh"
 
-namespace Wizards {
-
-
-
-} // namespace Wizards
+namespace cxxh::Creators {}  // namespace cxxh::Creators

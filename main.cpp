@@ -6,6 +6,9 @@
 #include <fmt/format.h>
 #include <boost/program_options.hpp>
 
+#include <creators/class.hh>
+#include <creators/header.hh>
+#include <creators/source.hh>
 #include "utilities.hh"
 
 namespace po = boost::program_options;
@@ -15,21 +18,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
   copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
   return os;
 }
-
-constexpr std::string_view class_header_template =
-    "{header_guard_start}\n\n"
-    "{namespace_begin}"
-    "class {class_name} {\n"
-    " public:\n"
-    "  {class_name}() = default;\n"
-    "  ~{class_name}() = default;\n"
-    "};\n"
-    "{namespace_end}"
-    "{header_guard_end}";
-
-constexpr std::string_view class_source_template =
-    "#include \"{header_file_name}\"\n\n"
-    "{namespace_begin}\n{namespace_end}";
 
 /*!
  * \brief Creates a class from the full identifier.

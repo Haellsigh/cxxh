@@ -1,6 +1,8 @@
 #pragma once
 
-namespace Wizards {
+#include <string_view>
+
+namespace cxxh::Creators {
 
 constexpr std::string_view class_template =
     "class {class_name} {\n"
@@ -15,4 +17,4 @@ class Class {
   ~Class() = default;
 };
 
-}  // namespace Wizards
+}  // namespace cxxh::Creators
