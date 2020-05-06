@@ -30,6 +30,7 @@ bool Header::create(boost::program_options::variables_map& vm,
   // Uppercase and lowercase conversions
   auto locale = boost::locale::generator()("en.UTF-8");
 
+  // Options
   const auto& identifiers = vm["header"].as<std::vector<std::string>>();
 
   const auto& verbose       = vm["verbose"].as<bool>();
@@ -44,7 +45,6 @@ bool Header::create(boost::program_options::variables_map& vm,
     includes.append("\n");
     for (auto include : include_list)
       includes.append("#include <" + include + ">\n");
-    includes.append("\n");
   }
 
   std::string header_extension =
@@ -65,13 +65,13 @@ bool Header::create(boost::program_options::variables_map& vm,
     // Include guard
     std::string include_guard_begin, include_guard_end;
     if (include_guard == "pragma")
-      include_guard_begin = "#pragma once";
+      include_guard_begin = "#pragma once\n";
     else if (include_guard == "ifndef") {
       auto include_guard_name = boost::locale::to_upper(
           utility::replace_all(namespaces, "::", "_") + (namespaces.empty() ? "" : "_") +
               name + "_" + header_extension,
           locale);
-      include_guard_begin = fmt::format("#ifndef {0}\n#define {0}", include_guard_name);
+      include_guard_begin = fmt::format("#ifndef {0}\n#define {0}\n", include_guard_name);
       include_guard_end   = fmt::format("\n\n#endif // {}", include_guard_name);
     }
 
@@ -79,7 +79,7 @@ bool Header::create(boost::program_options::variables_map& vm,
     std::string namespaces_begin, namespaces_end;
     if (!namespaces.empty()) {
       namespaces_begin = fmt::format("\nnamespace {} {{\n\n", namespaces);
-      namespaces_end   = fmt::format("\n\n}} // {}", namespaces);
+      namespaces_end   = fmt::format("\n\n}} // namespace {}", namespaces);
     }
 
     // Format header template

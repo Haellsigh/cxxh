@@ -108,11 +108,22 @@ void conflicting_options(const po::variables_map& vm,
                            opt2 + "'.");
 }
 
+/*!
+ * \brief Checks that option opt equals one of these values.
+ *
+ * \tparam T The type of the option.
+ */
+template <typename T, typename... Args>
+void is_one_of(const po::variables_map& vm, const char* opt, Args... these) {
+  auto value = vm[opt].as<T>();
+  if (((value != these) && ...)) {
+    throw std::domain_error(
+        fmt::format("Invalid value '{}' for option '{}'", value, opt));
+  }
+}
+
 int main(int argc, char** argv) {
   try {
-    // Load these from config
-    bool default_pragma = true;
-
     po::options_description generic("Generic options");
     generic.add_options()
         // Help
@@ -178,7 +189,7 @@ int main(int argc, char** argv) {
     bool header_command = vm.count("header");
     bool source_command = vm.count("source");
 
-    conflicting_options(vm, "pragma", "ifndef");
+    is_one_of<std::string>(vm, "include-guard", "pragma", "ifndef");
 
     if (vm.count("version")) {
       std::cout << "cxxh v0.3.0\n";
