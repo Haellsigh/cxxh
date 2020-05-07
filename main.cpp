@@ -5,7 +5,6 @@
 #include <creators/class.hh>
 #include <creators/header.hh>
 #include <creators/source.hh>
-#include "utilities.hh"
 
 namespace po = boost::program_options;
 using namespace cxxh;
@@ -137,7 +136,11 @@ int main(int argc, char** argv) {
         // Dry-run
         ("dry-run",
          po::value<bool>()->zero_tokens()->default_value(false)->implicit_value(true),
-         "do not actually create files");
+         "do not actually create files")
+        // Dry-run
+        ("force",
+         po::value<bool>()->zero_tokens()->default_value(false)->implicit_value(true),
+         "overwrite existing files");
 
     po::options_description usage("Creation options");
     usage.add_options()
@@ -153,13 +156,10 @@ int main(int argc, char** argv) {
 
     po::options_description options("Options");
     options.add_options()
-        // Identifiers
-        /*("identifiers", po::value<std::vector<std::string>>()->required(),
-         "identifiers of files to create")*/
         // Folder
         ("folder,f", po::value<std::string>(), "creates everything in arg folder")
         // Include
-        ("include", po::value<std::vector<std::string>>(),
+        ("include", po::value<std::vector<std::string>>()->multitoken(),
          "adds #include <arg> to header or source files")
         // Lowercase
         ("lowercase", po::value<bool>()->zero_tokens()->default_value(true),
@@ -173,9 +173,6 @@ int main(int argc, char** argv) {
         // Source extension
         ("source-ext", po::value<std::string>()->default_value("cpp"),
          "source files extension, default is cpp");
-
-    /*po::positional_options_description p;
-    p.add("identifiers", -1);*/
 
     generic.add(usage).add(options);
 
@@ -197,7 +194,7 @@ int main(int argc, char** argv) {
     }
 
     if (vm.count("help") || !(class_command || header_command || source_command)) {
-      std::cout << "Usage: cxxh <creation option> [options] args\n";
+      std::cout << "Usage: cxxh [options] <creation option> args\n";
       generic.print(std::cout);
       return 0;
     }
@@ -214,6 +211,11 @@ int main(int argc, char** argv) {
       Creators::Source::create(vm);
     }
 
+  } catch (std::filesystem::filesystem_error& e) {
+    if (e.code() == std::errc::file_exists) {
+      std::cout << "File " << e.path1().string() << " already exists\n";
+      std::cout << "Run cxxh with --force to overwrite\n";
+    }
   } catch (std::exception& e) {
     std::cout << e.what() << "\n";
     return 1;

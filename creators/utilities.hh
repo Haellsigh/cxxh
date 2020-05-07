@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sys/stat.h>
 #include <array>
 #include <filesystem>
 #include <string>
@@ -8,7 +9,7 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
-namespace utility {
+namespace cxxh::Creators::utilities {
 
 namespace detail {
 
@@ -33,8 +34,9 @@ std::vector<std::string> split(std::string string, const std::string& delimiter)
  * \brief Splits a string at the last occurence of delimiter
  * \return A pair of strings.
  */
-std::tuple<std::string, std::string> split_last(std::string        string,
-                                                const std::string& delimiter);
+std::tuple<std::string_view, std::string_view> split_last(
+    const std::string_view string,
+    const std::string_view delimiter);
 
 void                      replace_all_inplace(std::string&       str,
                                               const std::string& from,
@@ -45,17 +47,6 @@ void                      replace_all_inplace(std::string&       str,
 
 bool build_directories(std::filesystem::path directories);
 
-template <typename... Args>
-std::string parse_template(const std::string_view& template_string, Args... args) {
-  std::vector<std::pair<std::string, std::string>> pairs =
-      utility::pack_pairs<std::string, std::string>(args...);
+bool file_exists(std::filesystem::path filename);
 
-  std::string contents{template_string};
-
-  for (auto pair : pairs) {
-    replace_all(contents, "{" + pair.first + "}", pair.second);
-  }
-  return contents;
-}
-
-}  // namespace utility
+}  // namespace cxxh::Creators::utilities
