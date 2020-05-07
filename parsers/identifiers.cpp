@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "../utilities.hh"
+#include <creators/utilities.hh>
 
 namespace cxxh::Parsers::Identifiers {
 
@@ -24,9 +24,10 @@ bool verify(const std::vector<std::string_view>& identifiers) {
 std::tuple<std::filesystem::path, std::string, std::string> extract(
     const std::string_view identifier) {
   // Extract (directories, nameIdentifier) from identifier
-  auto [directories_string, nameIdentifier] = utility::split_last(identifier, "/");
+  auto [directories_string, nameIdentifier] =
+      Creators::utilities::split_last(identifier, "/");
   // Extract (namespaces, name) from nameIdentifier
-  auto [namespaces, name] = utility::split_last(nameIdentifier, "::");
+  auto [namespaces, name] = Creators::utilities::split_last(nameIdentifier, "::");
 
   return {directories_string, std::string{namespaces}, std::string{name}};
 }

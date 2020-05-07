@@ -4,8 +4,8 @@
 
 #include <boost/locale.hpp>
 
+#include <creators/utilities.hh>
 #include <parsers/identifiers.hh>
-#include <utilities.hh>
 
 namespace po = boost::program_options;
 
@@ -28,7 +28,7 @@ bool Source::create(boost::program_options::variables_map& vm) {
   const auto& lowercase = vm["lowercase"].as<bool>();
   const auto& force     = vm["force"].as<bool>();
   const auto& extension = boost::locale::to_lower(
-      utility::replace_all(vm["header-ext"].as<std::string>(), ".", ""), locale);
+      utilities::replace_all(vm["header-ext"].as<std::string>(), ".", ""), locale);
 
   // Includes
   std::string includes;

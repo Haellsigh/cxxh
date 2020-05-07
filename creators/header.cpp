@@ -9,8 +9,8 @@
 #include <fmt/format.h>
 #include <boost/locale.hpp>
 
+#include <creators/utilities.hh>
 #include <parsers/identifiers.hh>
-#include <utilities.hh>
 
 namespace po = boost::program_options;
 
@@ -39,7 +39,7 @@ bool Header::create(boost::program_options::variables_map& vm,
   const auto& force         = vm["force"].as<bool>();
   const auto& include_guard = vm["include-guard"].as<std::string>();
   const auto& extension     = boost::locale::to_lower(
-      utility::replace_all(vm["header-ext"].as<std::string>(), ".", ""), locale);
+      utilities::replace_all(vm["header-ext"].as<std::string>(), ".", ""), locale);
 
   // Includes
   std::string includes;
@@ -70,8 +70,8 @@ bool Header::create(boost::program_options::variables_map& vm,
       include_guard_begin = "#pragma once\n";
     else if (include_guard == "ifndef") {
       auto include_guard_name = boost::locale::to_upper(
-          utility::replace_all(namespaces, "::", "_") + (namespaces.empty() ? "" : "_") +
-              name + "_" + extension,
+          utilities::replace_all(namespaces, "::", "_") +
+              (namespaces.empty() ? "" : "_") + name + "_" + extension,
           locale);
       include_guard_begin = fmt::format("#ifndef {0}\n#define {0}\n", include_guard_name);
       include_guard_end   = fmt::format("\n\n#endif // {}", include_guard_name);
@@ -100,12 +100,12 @@ bool Header::create(boost::program_options::variables_map& vm,
 
     auto current_path = std::filesystem::current_path();
     if (!dry_run)
-      utility::build_directories(directories);
+      utilities::build_directories(directories);
     auto header_path = current_path / directories / filename;
     header_path.make_preferred();
 
     if (!dry_run) {
-      if (!force && utility::file_exists(header_path)) {
+      if (!force && utilities::file_exists(header_path)) {
         throw std::filesystem::filesystem_error(
             "File creation error", header_path,
             std::make_error_code(std::errc::file_exists));

@@ -6,8 +6,6 @@ add_executable(cxxh "")
 
 target_sources(cxxh PRIVATE
   main.cpp
-  utilities.hh
-  utilities.cpp
   parsers/identifiers.hh
   parsers/identifiers.cpp
   creators/utilities.hh
