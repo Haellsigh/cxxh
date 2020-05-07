@@ -9,14 +9,14 @@
 
 namespace po = boost::program_options;
 
-namespace cxxh::Creators {
+namespace cxxh::Creators::Source {
 
 constexpr std::string_view class_source_template =
     "#include \"{header_file_name}\"\n\n"
     "{namespace_begin}\n{namespace_end}"
     "\n";
 
-bool Source::create(boost::program_options::variables_map& vm) {
+bool create(boost::program_options::variables_map& vm) {
   // Uppercase and lowercase conversions
   auto locale = boost::locale::generator()("en.UTF-8");
 
@@ -46,4 +46,4 @@ bool Source::create(boost::program_options::variables_map& vm) {
   return true;
 }
 
-}  // namespace cxxh::Creators
+}  // namespace cxxh::Creators::Source

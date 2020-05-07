@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace cxxh::Creators {
+namespace cxxh::Creators::Class {
 
 constexpr std::string_view class_template =
     "class {class_name} {\n"
@@ -11,8 +11,8 @@ constexpr std::string_view class_template =
     "  ~{class_name}() = default;\n"
     "};\n";
 
-bool Class::create(boost::program_options::variables_map& vm) {
+bool create(boost::program_options::variables_map& vm) {
   return true;
 }
 
-}  // namespace cxxh::Creators
+}  // namespace cxxh::Creators::Class

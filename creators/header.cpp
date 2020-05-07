@@ -14,7 +14,7 @@
 
 namespace po = boost::program_options;
 
-namespace cxxh::Creators {
+namespace cxxh::Creators::Header {
 
 constexpr std::string_view header_template =
     "{include_guard_begin}"  // 1 \n after
@@ -25,8 +25,7 @@ constexpr std::string_view header_template =
     "{include_guard_end}"  // 2 \n before
     "\n";
 
-bool Header::create(boost::program_options::variables_map& vm,
-                    const std::string&                     content) {
+bool create(boost::program_options::variables_map& vm, const std::string& content) {
   // Uppercase and lowercase conversions
   auto locale = boost::locale::generator()("en.UTF-8");
 
@@ -124,4 +123,4 @@ bool Header::create(boost::program_options::variables_map& vm,
   return true;
 }
 
-}  // namespace cxxh::Creators
+}  // namespace cxxh::Creators::Header

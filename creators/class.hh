@@ -2,11 +2,8 @@
 
 #include <boost/program_options.hpp>
 
-namespace cxxh::Creators {
+namespace cxxh::Creators::Class {
 
-class Class {
- public:
-  static bool create(boost::program_options::variables_map& vm);
-};
+bool create(boost::program_options::variables_map& vm);
 
-}  // namespace cxxh::Creators
+}  // namespace cxxh::Creators::Class
