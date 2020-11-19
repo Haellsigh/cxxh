@@ -2,8 +2,11 @@
 
 #include <boost/program_options.hpp>
 
-namespace cxxh::Creators::Source {
+namespace cxxh::Creators::Source
+{
 
-bool create(boost::program_options::variables_map& vm);
+bool create_from_identifiers(boost::program_options::variables_map &vm, std::vector<std::string> const &identifiers,
+                             std::string const &contents = "", std::vector<std::string> const &include_list = {});
+bool create(boost::program_options::variables_map &vm, const std::string &contents = "");
 
-}  // namespace cxxh::Creators::Source
+} // namespace cxxh::Creators::Source
